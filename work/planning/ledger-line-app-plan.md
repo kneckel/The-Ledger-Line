@@ -200,16 +200,38 @@ Deterministic, no AI. The "algorithm" is form + inheritance:
 - People roster CRUD (Compliance Champion / Corner Office picks pull from here)
 - Author profile screen (edits the `settings` row used in the Welcome letter)
 
-### Phase 5 — Export pipeline
-- PDF (priority): Puppeteer rendering the HTML preview route → store in Supabase Storage
-- DOCX: `docx` library
-- MD: simple template fill
-- Stored in `exports` table; download buttons
+### Phase 5 — Export pipeline  ✅ done (2026-05-07)
 
-### Phase 6 — Library + public share
-- List view: drafts + published, search/filter, duplicate-as-next-issue
-- Public route `/n/<share_token>` rendering printable HTML + Download PDF button
-- Open Graph metadata for nice link unfurls
+**Done — all client-side, no serverless function needed:**
+- **PDF** via the browser's print dialog. New print stylesheet in `src/index.css` (`@media print`) hides app chrome and lets `.newsletter-doc` fill the page edge-to-edge. A pre-dialog tip on the Preview page tells the user to set Destination = "Save as PDF", Margins = None, Background graphics = On.
+- **DOCX** via the `docx` npm library. New `src/lib/docx-export.ts` — clean editorial doc with brand-coloured headings, blockquote pull quotes, tables for stats / calendar / audit timeline. Lazy-loaded via dynamic import so the chunk only ships when the user clicks the Word button.
+- **Markdown** via `src/lib/markdown-export.ts` — pure function from sections JSON to MD with tables and blockquotes. Trivial bundle cost.
+- All three buttons live in the no-print toolbar on `/newsletters/:id/preview`. Filenames follow `<title-slug>-<period>.ext`.
+- Bundle stays reasonable: main app 470 KB, docx-export chunk 360 KB (lazy).
+
+**Why no Puppeteer / serverless:** the user accesses the deployed app from any machine; her browser is the runtime. Generating in-browser keeps it free, instant, and avoids Vercel function size limits. Exports are ephemeral — regenerated on demand. Server-side stored exports would only be needed if we later want public-share PDFs that exist as URLs without user interaction (Phase 6 work).
+
+### Phase 6 — Library + public share  ✅ done (2026-05-07)
+
+**Done:**
+- **Publish / Unpublish** in `newsletterService`: `publish()` mints a `share_token` (UUID v4) on first publish, sets `status='published'` and `published_at`, **and stamps the author profile snapshot** (`author_name`, `author_role`, `author_photo_url`) into every `welcome_letter` section so the public route — which can't read the owner's `settings` row via RLS — still shows the right byline. Idempotent: republishing keeps the same token, so already-shared links stay valid. `unpublish()` flips back to draft (link stops working until republished).
+- **Editor publish controls:** green Publish button on draft / Unpublish on published. After publishing, a green "This issue is published" panel appears with the share URL, a Copy link button, and an Open ↗ link.
+- **Public share route** at `/n/:token` (top-level, no `ProtectedRoute`). Loads via `newsletterService.getBySharedToken()`; RLS allows the anonymous SELECT. Renders the same `NewsletterRenderer` with `settings=null` and `people=[]` (snapshots fill in). Includes the same three download buttons (PDF / DOCX / MD) and a small "Internal distribution only. Not legal advice." footer. Doc title is set per-issue.
+- **Library page:** search by title/period, status filter pills (All / Draft / Published / Archived) with live counts, **Duplicate** button per row that creates a new draft from the issue's content via `newsletterService.duplicate()`.
+- **Site-level Open Graph + Twitter Card** meta tags in `index.html`. Per-issue dynamic OG isn't done — Vite is client-rendered so social crawlers see the static tags. Workable for now; if richer link unfurls per issue are needed, a Vercel edge function rewriting OG tags by share_token is the next move.
+- **Storage:** `assets` bucket changed to `public = true` so champion / corner-office photos render on the public share page. Write access is still scoped to the owner via the per-user folder prefix policies. Read access is intentionally public (assets are designed to be visible on shared newsletters).
+
+**User actions required (one small SQL command):**
+- The migration's `assets` bucket was created as private. Run this in the Supabase SQL editor to make it public:
+  ```sql
+  update storage.buckets set public = true where id = 'assets';
+  ```
+  (Future re-runs of the migration set this correctly via the `on conflict … update` clause.)
+
+**Out of scope for Phase 6 (mention if needed later):**
+- Per-issue dynamic OG unfurls (would need a Vercel edge function or static prerender).
+- Public RSS/email distribution lists.
+- Comments on the public page.
 
 ### Phase 7 — Polish
 - Plain-language errors

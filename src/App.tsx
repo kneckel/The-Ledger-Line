@@ -7,11 +7,13 @@ import { NewslettersPage } from './pages/NewslettersPage';
 import { EditorPage } from './pages/EditorPage';
 import { PreviewPage } from './pages/PreviewPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { PublicSharePage } from './pages/PublicSharePage';
 
 export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/n/:token" element={<PublicSharePage />} />
 
       <Route
         element={

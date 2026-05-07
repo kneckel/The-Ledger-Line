@@ -111,3 +111,48 @@
     @apply px-5 py-3 align-top;
   }
 }
+
+/* -------------------------------------------------------------------------
+   Print stylesheet — used when the user picks "Save as PDF" from the
+   browser's print dialog. Hides the surrounding app chrome and lets the
+   newsletter document fill the page edge-to-edge.
+   ------------------------------------------------------------------------- */
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+  body {
+    background: white !important;
+  }
+  body * {
+    visibility: hidden !important;
+  }
+  .newsletter-doc,
+  .newsletter-doc * {
+    visibility: visible !important;
+  }
+  .newsletter-doc {
+    position: absolute;
+    inset: 0;
+    margin: 0 !important;
+    max-width: none !important;
+    width: 100% !important;
+    box-shadow: none !important;
+    border: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  /* Try to keep stat-card grids and table headers from splitting awkwardly */
+  .nl-stat-card,
+  table.nl-cal thead {
+    break-inside: avoid;
+  }
+  section {
+    break-inside: avoid-page;
+  }
+}
+

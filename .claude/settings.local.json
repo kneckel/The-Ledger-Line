@@ -98,7 +98,9 @@
       "Bash(npm run *)",
       "Bash(grep -n \"Relation\\\\$1\" D:/DEV/newsletter-app/node_modules/@supabase/postgrest-js/dist/index.d.mts)",
       "Bash(rm D:/DEV/newsletter-app/src/type-test.ts)",
-      "Bash(rm -f tsconfig.app.tsbuildinfo tsconfig.node.tsbuildinfo)"
+      "Bash(rm -f tsconfig.app.tsbuildinfo tsconfig.node.tsbuildinfo)",
+      "Bash(git status *)",
+      "Bash(git log *)"
     ],
     "deny": [],
     "ask": []

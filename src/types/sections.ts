@@ -78,7 +78,11 @@ export interface WelcomeLetterContent extends BaseContent {
   _type: 'welcome_letter';
   heading?: string;         // "From the Desk of the Regional Compliance Manager"
   body: string;             // rich-text HTML
-  // author is pulled from `settings` at render time; not stored here.
+  // Snapshot of the author at publish time so the public share route — which
+  // can't read the owner's settings row — still shows the right byline.
+  author_name?: string;
+  author_role?: string;
+  author_photo_url?: string | null;
 }
 
 export interface FeatureArticleContent extends BaseContent {

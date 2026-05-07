@@ -177,6 +177,39 @@ export function EditorPage() {
   };
 
   // ---------------------------------------------------------------------------
+  // Publish / Unpublish
+  // ---------------------------------------------------------------------------
+  const handlePublish = async () => {
+    if (!newsletter) return;
+    setError(null);
+    setSaveState('saving');
+    try {
+      const updated = await newsletterService.publish(newsletter.id);
+      setNewsletter(updated);
+      setSaveState('saved');
+    } catch (e) {
+      setError((e as Error).message);
+      setSaveState('error');
+    }
+  };
+
+  const handleUnpublish = async () => {
+    if (!newsletter) return;
+    if (!confirm('Move this issue back to draft? The share link stops working until you republish.'))
+      return;
+    setError(null);
+    setSaveState('saving');
+    try {
+      const updated = await newsletterService.unpublish(newsletter.id);
+      setNewsletter(updated);
+      setSaveState('saved');
+    } catch (e) {
+      setError((e as Error).message);
+      setSaveState('error');
+    }
+  };
+
+  // ---------------------------------------------------------------------------
   // Reset actions
   // ---------------------------------------------------------------------------
   const resetSlotToDefault = (slotName: string) => {
@@ -237,6 +270,24 @@ export function EditorPage() {
             >
               Preview
             </Link>
+          )}
+          {!isNew && newsletter && newsletter.status !== 'published' && (
+            <button
+              type="button"
+              onClick={() => void handlePublish()}
+              className="bg-emerald-700 text-white text-sm rounded-md px-4 py-2 hover:bg-emerald-800"
+            >
+              Publish
+            </button>
+          )}
+          {!isNew && newsletter && newsletter.status === 'published' && (
+            <button
+              type="button"
+              onClick={() => void handleUnpublish()}
+              className="border border-emerald-200 bg-emerald-50 text-emerald-800 text-sm rounded-md px-4 py-2 hover:bg-emerald-100"
+            >
+              Unpublish
+            </button>
           )}
           {isNew && (
             <button
@@ -396,6 +447,10 @@ export function EditorPage() {
           </div>
         </div>
 
+        {newsletter.status === 'published' && newsletter.share_token && (
+          <SharePanel token={newsletter.share_token} />
+        )}
+
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-medium text-slate-700">Sections</h3>
           <span className="text-xs text-slate-500">
@@ -445,4 +500,54 @@ function SaveIndicator({ state }: { state: 'idle' | 'saving' | 'saved' | 'error'
   } as const;
   const { text, cls } = map[state];
   return <span className={`text-xs ${cls}`}>{text}</span>;
+}
+
+function SharePanel({ token }: { token: string }) {
+  const url = `${window.location.origin}/n/${token}`;
+  const [copied, setCopied] = useState(false);
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* noop */
+    }
+  };
+  return (
+    <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-5 flex flex-col gap-3">
+      <div className="flex items-baseline justify-between gap-3">
+        <div>
+          <h3 className="text-sm font-semibold text-emerald-900">This issue is published</h3>
+          <p className="text-xs text-emerald-800 mt-0.5">
+            Anyone with the link can read it — no sign-in required.
+          </p>
+        </div>
+        <a
+          href={url}
+          target="_blank"
+          rel="noreferrer"
+          className="text-xs text-emerald-900 hover:underline whitespace-nowrap"
+        >
+          Open ↗
+        </a>
+      </div>
+      <div className="flex items-stretch gap-2">
+        <input
+          type="text"
+          readOnly
+          value={url}
+          onFocus={(e) => e.currentTarget.select()}
+          className="flex-1 border border-emerald-200 bg-white rounded-md px-3 py-2 text-xs font-mono text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+        />
+        <button
+          type="button"
+          onClick={() => void handleCopy()}
+          className="text-sm bg-emerald-700 text-white rounded-md px-3 py-2 hover:bg-emerald-800"
+        >
+          {copied ? '✓ Copied' : 'Copy link'}
+        </button>
+      </div>
+    </div>
+  );
 }

@@ -10,8 +10,10 @@ interface Props {
 // The welcome card visually flows out of the cover hero — peach card with
 // a teal sidebar (matches the reference PDF page 1).
 export function WelcomeLetterSlot({ content, settings }: Props) {
-  const author = settings?.author_name || '(Name here)';
-  const role = settings?.author_role || 'Regional Compliance Manager';
+  // Prefer the snapshot stamped at publish time — keeps the public share
+  // route accurate even when settings (owner-only) isn't available.
+  const author = content.author_name || settings?.author_name || '(Name here)';
+  const role = content.author_role || settings?.author_role || 'Regional Compliance Manager';
 
   return (
     <section className="px-12 pt-10 pb-12 bg-brand-paper">

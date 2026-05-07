@@ -197,9 +197,13 @@ create policy "exports insert via owner"
 -- -----------------------------------------------------------------------------
 -- Storage buckets (private; access via signed URLs)
 -- -----------------------------------------------------------------------------
+-- The `assets` bucket holds author / people photos that need to be visible on
+-- public share pages (anyone with the share_token can read the newsletter).
+-- Read access is public; write access is still scoped to the owner via the
+-- storage RLS policies below (per-user folder prefix).
 insert into storage.buckets (id, name, public)
-  values ('assets',  'assets',  false)
-  on conflict (id) do nothing;
+  values ('assets',  'assets',  true)
+  on conflict (id) do update set public = excluded.public;
 
 insert into storage.buckets (id, name, public)
   values ('exports', 'exports', false)
