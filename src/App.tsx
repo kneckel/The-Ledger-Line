@@ -5,7 +5,8 @@ import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { NewslettersPage } from './pages/NewslettersPage';
 import { EditorPage } from './pages/EditorPage';
-import { SubscribersPage } from './pages/SubscribersPage';
+import { PreviewPage } from './pages/PreviewPage';
+import { SettingsPage } from './pages/SettingsPage';
 
 export default function App() {
   return (
@@ -23,7 +24,8 @@ export default function App() {
         <Route path="/newsletters" element={<NewslettersPage />} />
         <Route path="/newsletters/new" element={<EditorPage />} />
         <Route path="/newsletters/:id" element={<EditorPage />} />
-        <Route path="/subscribers" element={<SubscribersPage />} />
+        <Route path="/newsletters/:id/preview" element={<PreviewPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

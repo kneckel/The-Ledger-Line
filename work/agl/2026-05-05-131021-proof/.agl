@@ -1,0 +1,8 @@
+FEATURE_SLUG=proof
+PLAN_PATH=work/agl/2026-05-05-131021-proof/context/plan.md
+DATE=2026-05-05
+ROUND=1
+BRANCH=agl/proof
+WORKTREE=work/agl/2026-05-05-131021-proof/worktree
+MAIN_ROOT=D:/DEV/CourtSubscription
+LAST_STAGE=worker

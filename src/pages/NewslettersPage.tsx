@@ -1,22 +1,22 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useNewsletters } from '@/hooks/useNewsletters';
 
 const statusStyles: Record<string, string> = {
   draft: 'bg-slate-100 text-slate-700',
-  scheduled: 'bg-amber-100 text-amber-800',
-  sent: 'bg-emerald-100 text-emerald-800',
+  published: 'bg-emerald-100 text-emerald-800',
   archived: 'bg-slate-100 text-slate-500',
 };
 
 export function NewslettersPage() {
   const { newsletters, loading, error } = useNewsletters();
+  const navigate = useNavigate();
 
   return (
     <div className="max-w-5xl">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h2 className="font-serif text-3xl tracking-tight text-slate-900">Newsletters</h2>
-          <p className="text-sm text-slate-500 mt-1">All your drafts, scheduled sends, and history.</p>
+          <p className="text-sm text-slate-500 mt-1">Drafts, published issues, and archive.</p>
         </div>
         <Link
           to="/newsletters/new"
@@ -44,19 +44,23 @@ export function NewslettersPage() {
             <thead className="bg-slate-50 text-left text-slate-500">
               <tr>
                 <th className="px-4 py-3 font-medium">Title</th>
+                <th className="px-4 py-3 font-medium">Period</th>
                 <th className="px-4 py-3 font-medium">Status</th>
                 <th className="px-4 py-3 font-medium">Updated</th>
+                <th className="px-4 py-3 font-medium w-px" />
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {newsletters.map((n) => (
-                <tr key={n.id} className="hover:bg-slate-50">
+                <tr
+                  key={n.id}
+                  onClick={() => navigate(`/newsletters/${n.id}`)}
+                  className="hover:bg-slate-50 cursor-pointer"
+                >
                   <td className="px-4 py-3">
-                    <Link to={`/newsletters/${n.id}`} className="text-slate-900 hover:underline">
-                      {n.title || 'Untitled'}
-                    </Link>
-                    <p className="text-xs text-slate-500 mt-0.5">{n.subject}</p>
+                    <span className="text-slate-900 font-medium">{n.title || 'Untitled'}</span>
                   </td>
+                  <td className="px-4 py-3 text-slate-600">{n.period_label || '—'}</td>
                   <td className="px-4 py-3">
                     <span
                       className={`inline-block text-xs px-2 py-0.5 rounded ${
@@ -68,6 +72,15 @@ export function NewslettersPage() {
                   </td>
                   <td className="px-4 py-3 text-slate-500">
                     {new Date(n.updated_at).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <Link
+                      to={`/newsletters/${n.id}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-xs text-slate-700 hover:text-slate-900 hover:underline whitespace-nowrap"
+                    >
+                      Open →
+                    </Link>
                   </td>
                 </tr>
               ))}

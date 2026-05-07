@@ -10,3 +10,104 @@
     @apply bg-slate-50 text-slate-900 antialiased;
   }
 }
+
+/* -------------------------------------------------------------------------
+   Newsletter-specific layer.
+   These classes apply only inside `.newsletter-doc` — the canonical render.
+   ------------------------------------------------------------------------- */
+@layer components {
+  .newsletter-doc {
+    @apply font-sans text-brand-ink-soft bg-brand-paper;
+    line-height: 1.65;
+    /* Theme variables — overridden per-template via inline style in renderer */
+    --theme-hero: #1B3A4B;
+    --theme-accent-1: #E54E2C; /* orange */
+    --theme-accent-2: #E9B341; /* gold */
+    --theme-accent-3: #1F786E; /* teal */
+  }
+
+  /* Headings get the serif face by default; color is left to inheritance so
+     slots that sit on dark backgrounds (cover, pull quote, scenario card)
+     can use text-white without fighting specificity. */
+  .newsletter-doc h1,
+  .newsletter-doc h2,
+  .newsletter-doc h3 {
+    @apply font-serif;
+    color: inherit;
+  }
+
+  /* Section kicker bar: small block + tracking-wide caps */
+  .newsletter-doc .nl-kicker {
+    @apply inline-flex items-center gap-2 text-[11px] tracking-[0.18em] uppercase font-semibold;
+    color: var(--theme-accent-1);
+  }
+  .newsletter-doc .nl-kicker::before {
+    content: '';
+    width: 28px;
+    height: 8px;
+    background: var(--theme-accent-1);
+    display: inline-block;
+  }
+  .newsletter-doc .nl-kicker-teal {
+    color: var(--theme-accent-3);
+  }
+  .newsletter-doc .nl-kicker-teal::before {
+    background: var(--theme-accent-3);
+  }
+  .newsletter-doc .nl-kicker-gold {
+    color: var(--theme-accent-2);
+  }
+  .newsletter-doc .nl-kicker-gold::before {
+    background: var(--theme-accent-2);
+  }
+
+  /* Pill/tag */
+  .newsletter-doc .nl-pill {
+    @apply inline-block text-[10px] tracking-[0.18em] uppercase font-semibold px-3 py-1 text-white;
+    background: var(--theme-accent-1);
+  }
+
+  /* Pull-quote (cream-card variant — used inline) */
+  .newsletter-doc .nl-quote-cream {
+    @apply border-l-4 pl-5 pr-6 py-3 my-5 italic text-brand-teal-deep;
+    border-color: var(--theme-accent-3);
+    font-family: 'Playfair Display', serif;
+  }
+
+  /* Stat callout — small variant (used inline next to text) */
+  .newsletter-doc .nl-stat-card {
+    @apply text-left py-5 px-5 relative;
+  }
+  .newsletter-doc .nl-stat-card .nl-stat-label-top {
+    @apply text-[10px] tracking-[0.18em] uppercase font-semibold;
+  }
+  .newsletter-doc .nl-stat-card .nl-stat-value {
+    @apply font-serif text-5xl mt-2 leading-none;
+  }
+  .newsletter-doc .nl-stat-card .nl-stat-rule {
+    @apply h-[2px] my-3;
+  }
+  .newsletter-doc .nl-stat-card .nl-stat-label-bottom {
+    @apply text-[11px] uppercase font-semibold tracking-[0.08em] leading-snug;
+  }
+  .newsletter-doc .nl-stat-card .nl-stat-source {
+    @apply text-[10px] italic mt-1;
+  }
+
+  /* Calendar table */
+  .newsletter-doc table.nl-cal {
+    @apply w-full text-sm;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+  .newsletter-doc table.nl-cal thead {
+    @apply text-white text-[10px] tracking-[0.16em] uppercase font-semibold;
+    background: var(--theme-hero);
+  }
+  .newsletter-doc table.nl-cal th {
+    @apply px-5 py-3 text-left;
+  }
+  .newsletter-doc table.nl-cal td {
+    @apply px-5 py-3 align-top;
+  }
+}

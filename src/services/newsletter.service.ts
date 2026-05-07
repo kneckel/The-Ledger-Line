@@ -1,5 +1,7 @@
 import { supabase } from '@/lib/supabase';
-import type { Newsletter } from '@/types/database.types';
+import type { Newsletter, NewsletterInsert, NewsletterStatus } from '@/types/database.types';
+
+type NewsletterUpdate = Partial<Omit<NewsletterInsert, 'user_id'>>;
 
 export const newsletterService = {
   async list(userId: string): Promise<Newsletter[]> {
@@ -24,17 +26,21 @@ export const newsletterService = {
 
   async create(input: {
     user_id: string;
+    template_id: string;
     title: string;
-    subject: string;
-    content: string;
+    period_label?: string;
+    inputs?: Record<string, unknown>;
   }): Promise<Newsletter> {
     const { data, error } = await supabase
       .from('newsletters')
       .insert({
-        ...input,
-        status: 'draft',
-        scheduled_for: null,
-        sent_at: null,
+        user_id: input.user_id,
+        template_id: input.template_id,
+        title: input.title,
+        period_label: input.period_label ?? '',
+        status: 'draft' as NewsletterStatus,
+        inputs: input.inputs ?? {},
+        sections: {},
       })
       .select()
       .single();
@@ -42,7 +48,7 @@ export const newsletterService = {
     return data;
   },
 
-  async update(id: string, patch: Partial<Newsletter>): Promise<Newsletter> {
+  async update(id: string, patch: NewsletterUpdate): Promise<Newsletter> {
     const { data, error } = await supabase
       .from('newsletters')
       .update(patch)
@@ -55,6 +61,41 @@ export const newsletterService = {
 
   async remove(id: string): Promise<void> {
     const { error } = await supabase.from('newsletters').delete().eq('id', id);
+    if (error) throw error;
+  },
+
+  // Find the most-recent published issue of the same template for this user.
+  // Used to pre-fill `sections` when starting a new issue.
+  async findPrefillSource(userId: string, templateId: string): Promise<Newsletter | null> {
+    const { data, error } = await supabase
+      .from('newsletters')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('template_id', templateId)
+      .eq('status', 'published')
+      .order('published_at', { ascending: false, nullsFirst: false })
+      .limit(1);
+    if (error) throw error;
+    return data && data.length > 0 ? data[0] : null;
+  },
+
+  // List this user's prior issues of a template — used by the "pick a specific
+  // past issue" option on create.
+  async listForTemplate(userId: string, templateId: string): Promise<Newsletter[]> {
+    const { data, error } = await supabase
+      .from('newsletters')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('template_id', templateId)
+      .order('updated_at', { ascending: false });
+    if (error) throw error;
+    return data ?? [];
+  },
+
+  async snapshot(newsletterId: string, sections: Record<string, unknown>): Promise<void> {
+    const { error } = await supabase
+      .from('newsletter_versions')
+      .insert({ newsletter_id: newsletterId, sections });
     if (error) throw error;
   },
 };

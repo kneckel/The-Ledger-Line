@@ -1,14 +1,12 @@
 import { Link } from 'react-router-dom';
 import { useNewsletters } from '@/hooks/useNewsletters';
-import { useSubscribers } from '@/hooks/useSubscribers';
 
 export function DashboardPage() {
-  const { newsletters, loading: nLoading } = useNewsletters();
-  const { subscribers, loading: sLoading } = useSubscribers();
+  const { newsletters, loading } = useNewsletters();
 
   const draftCount = newsletters.filter((n) => n.status === 'draft').length;
-  const sentCount = newsletters.filter((n) => n.status === 'sent').length;
-  const activeSubs = subscribers.filter((s) => s.status === 'active').length;
+  const publishedCount = newsletters.filter((n) => n.status === 'published').length;
+  const archivedCount = newsletters.filter((n) => n.status === 'archived').length;
 
   return (
     <div className="max-w-5xl">
@@ -26,9 +24,9 @@ export function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatCard label="Drafts" value={nLoading ? '…' : draftCount} />
-        <StatCard label="Sent" value={nLoading ? '…' : sentCount} />
-        <StatCard label="Active subscribers" value={sLoading ? '…' : activeSubs} />
+        <StatCard label="Drafts" value={loading ? '…' : draftCount} />
+        <StatCard label="Published" value={loading ? '…' : publishedCount} />
+        <StatCard label="Archived" value={loading ? '…' : archivedCount} />
       </div>
     </div>
   );

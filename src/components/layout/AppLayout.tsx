@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 const navItems = [
   { to: '/', label: 'Dashboard', end: true },
   { to: '/newsletters', label: 'Newsletters' },
-  { to: '/subscribers', label: 'Subscribers' },
+  { to: '/settings', label: 'Settings' },
 ];
 
 export function AppLayout() {
@@ -14,8 +14,8 @@ export function AppLayout() {
     <div className="min-h-screen grid grid-cols-[16rem_1fr]">
       <aside className="border-r border-slate-200 bg-white p-6 flex flex-col">
         <div className="mb-8">
-          <h1 className="font-serif text-2xl tracking-tight text-slate-900">Newsletter</h1>
-          <p className="text-xs text-slate-500 mt-1">Draft. Send. Repeat.</p>
+          <h1 className="font-serif text-2xl tracking-tight text-slate-900">The Ledger Line</h1>
+          <p className="text-xs text-slate-500 mt-1">Financial Compliance · Insight · Integrity</p>
         </div>
 
         <nav className="flex flex-col gap-1 flex-1">
