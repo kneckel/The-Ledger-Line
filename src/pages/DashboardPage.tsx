@@ -4,8 +4,10 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useNewsletters } from '@/hooks/useNewsletters';
 import { templateService } from '@/services/template.service';
 import { peopleService } from '@/services/people.service';
+import { settingsService } from '@/services/settings.service';
 import { LatestNewsletterCard } from '@/components/dashboard/LatestNewsletterCard';
-import type { Person, Template } from '@/types/database.types';
+import { OnboardingChecklist } from '@/components/dashboard/OnboardingChecklist';
+import type { Person, Settings, Template } from '@/types/database.types';
 
 export function DashboardPage() {
   const { user } = useAuth();
@@ -20,27 +22,42 @@ export function DashboardPage() {
 
   const [template, setTemplate] = useState<Template | null>(null);
   const [people, setPeople] = useState<Person[]>([]);
+  const [settings, setSettings] = useState<Settings | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
 
+  // Load people + settings independently of the latest-newsletter preview so
+  // the onboarding checklist can render even before the user has any issues.
   useEffect(() => {
-    if (!latest || !user) {
+    if (!user) return;
+    void (async () => {
+      const [s, p] = await Promise.all([
+        settingsService.get(user.id),
+        peopleService.list(user.id),
+      ]);
+      setSettings(s);
+      setPeople(p);
+    })();
+  }, [user]);
+
+  useEffect(() => {
+    if (!latest) {
       setTemplate(null);
       return;
     }
     setPreviewLoading(true);
     void (async () => {
       try {
-        const [t, p] = await Promise.all([
-          templateService.getById(latest.template_id),
-          peopleService.list(user.id),
-        ]);
+        const t = await templateService.getById(latest.template_id);
         setTemplate(t);
-        setPeople(p);
       } finally {
         setPreviewLoading(false);
       }
     })();
-  }, [latest, user]);
+  }, [latest]);
+
+  const hasProfile = Boolean(settings?.author_name && settings.author_name.trim());
+  const hasPeople = people.length > 0;
+  const hasNewsletter = newsletters.length > 0;
 
   return (
     <div className="max-w-5xl">
@@ -57,26 +74,19 @@ export function DashboardPage() {
         </Link>
       </div>
 
+      {!loading && (
+        <OnboardingChecklist
+          hasProfile={hasProfile}
+          hasPeople={hasPeople}
+          hasNewsletter={hasNewsletter}
+        />
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <StatCard label="Drafts" value={loading ? '…' : draftCount} />
         <StatCard label="Published" value={loading ? '…' : publishedCount} />
         <StatCard label="Archived" value={loading ? '…' : archivedCount} />
       </div>
-
-      {!loading && newsletters.length === 0 && (
-        <div className="bg-white border border-dashed border-slate-300 rounded-lg p-10 text-center">
-          <p className="text-slate-700 font-medium">No newsletters yet.</p>
-          <p className="text-sm text-slate-500 mt-1">
-            Pick a template and start your first issue.
-          </p>
-          <Link
-            to="/newsletters/new"
-            className="inline-block mt-4 bg-slate-900 text-white text-sm rounded-md px-4 py-2 hover:bg-slate-800"
-          >
-            Create your first newsletter
-          </Link>
-        </div>
-      )}
 
       {latest && (
         <div>

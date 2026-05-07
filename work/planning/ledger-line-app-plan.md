@@ -233,11 +233,18 @@ Deterministic, no AI. The "algorithm" is form + inheritance:
 - Public RSS/email distribution lists.
 - Comments on the public page.
 
-### Phase 7 — Polish
-- Plain-language errors
-- Onboarding tour
-- Empty states with examples
-- Confirmation dialogs on destructive actions
+### Phase 7 — Polish  ✅ done (2026-05-07)
+
+**Done:**
+- **Plain-language errors:** new `src/lib/friendlyError.ts` translates known patterns (JWT expired, network failures, RLS denials, duplicate-key, FK violations, rate limits, file-too-large, invalid login) to human messages, falling back to a prettified original. Applied at user-visible error spots: `EditorPage`, `SettingsPage`, `LoginPage`. Sign-up confirmation copy softened to "Check your email — we just sent a link to confirm your account."
+- **Onboarding checklist** on the Dashboard. Three-item card visible until completed: (1) Set up your author profile → Settings, (2) Add a person to your roster (optional) → Settings, (3) Create your first newsletter → editor. Each item has a check/cross marker, a CTA button, and crosses itself off when the underlying state appears (`settings.author_name`, `people.length > 0`, `newsletters.length > 0`).
+- **Markdown formatting** in body text: `RichBody` now parses light Markdown (`**bold**`, `*italic*`, `[link](https://…)`, `\`code\``, single-newline `<br>`) for plain-text input, with HTML-escape first so untrusted text can't slip through. AI-imported HTML is still passed through untouched.
+- **Login page** rebranded from "Newsletter" to *The Ledger Line — Financial Compliance · Insight · Integrity*.
+
+**Out of scope (acceptable for v1):**
+- Replacing native `confirm()` dialogs with custom modals — `confirm()` is functional and already used on the destructive paths (Reset section, Unpublish, Delete person).
+- Multi-step interactive product tour (e.g. react-joyride). The checklist covers the same need with much less surface area.
+- Per-newsletter color overrides (mentioned in §3 as "Phase 4 work" — never landed; can be added if Reneé asks).
 
 ## 10. Out of scope (for now)
 

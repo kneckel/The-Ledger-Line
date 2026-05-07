@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { friendlyError } from '@/lib/friendlyError';
 
 type Mode = 'signin' | 'signup';
 
@@ -23,11 +24,11 @@ export function LoginPage() {
     const { error: authError } = await fn(email, password);
     setSubmitting(false);
     if (authError) {
-      setError(authError.message);
+      setError(friendlyError(authError));
       return;
     }
     if (mode === 'signup') {
-      setError('Check your email to confirm your account.');
+      setError('Check your email — we just sent a link to confirm your account.');
       return;
     }
     navigate('/');
@@ -36,8 +37,9 @@ export function LoginPage() {
   return (
     <div className="min-h-screen grid place-items-center bg-slate-50 p-6">
       <div className="w-full max-w-sm bg-white rounded-lg border border-slate-200 p-8 shadow-sm">
-        <h1 className="font-serif text-3xl tracking-tight text-slate-900">Newsletter</h1>
-        <p className="text-sm text-slate-500 mt-1">
+        <h1 className="font-serif text-3xl tracking-tight text-slate-900">The Ledger Line</h1>
+        <p className="text-xs text-slate-500 mt-0.5">Financial Compliance · Insight · Integrity</p>
+        <p className="text-sm text-slate-700 mt-4">
           {mode === 'signin' ? 'Sign in to continue.' : 'Create an account.'}
         </p>
 

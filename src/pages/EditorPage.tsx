@@ -6,6 +6,7 @@ import { templateService } from '@/services/template.service';
 import { peopleService } from '@/services/people.service';
 import { useTemplates } from '@/hooks/useTemplates';
 import { useDebouncedCallback } from '@/lib/useDebouncedCallback';
+import { friendlyError } from '@/lib/friendlyError';
 import { TemplatePickerCard } from '@/components/templates/TemplatePickerCard';
 import { SlotEditorCard } from '@/components/editor/SlotEditorCard';
 import { AIPromptModal } from '@/components/editor/AIPromptModal';
@@ -68,7 +69,7 @@ export function EditorPage() {
         setPeriodLabel(n.period_label);
         setSections((n.sections ?? {}) as SectionsMap);
       } catch (e) {
-        setError((e as Error).message);
+        setError(friendlyError(e));
       } finally {
         setLoading(false);
       }
@@ -108,7 +109,7 @@ export function EditorPage() {
       // Snapshot to versions on each save (best-effort).
       void newsletterService.snapshot(newsletter.id, (patch.sections ?? sections) as Record<string, unknown>);
     } catch (e) {
-      setError((e as Error).message);
+      setError(friendlyError(e));
       setSaveState('error');
     }
   }, 1000);
@@ -171,7 +172,7 @@ export function EditorPage() {
       }
       navigate(`/newsletters/${created.id}`, { replace: true });
     } catch (e) {
-      setError((e as Error).message);
+      setError(friendlyError(e));
       setSaveState('error');
     }
   };
@@ -188,7 +189,7 @@ export function EditorPage() {
       setNewsletter(updated);
       setSaveState('saved');
     } catch (e) {
-      setError((e as Error).message);
+      setError(friendlyError(e));
       setSaveState('error');
     }
   };
@@ -204,7 +205,7 @@ export function EditorPage() {
       setNewsletter(updated);
       setSaveState('saved');
     } catch (e) {
-      setError((e as Error).message);
+      setError(friendlyError(e));
       setSaveState('error');
     }
   };

@@ -3,6 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { settingsService } from '@/services/settings.service';
 import { peopleService } from '@/services/people.service';
 import { supabase } from '@/lib/supabase';
+import { friendlyError } from '@/lib/friendlyError';
 import type { Person } from '@/types/database.types';
 
 export function SettingsPage() {
@@ -70,7 +71,7 @@ export function SettingsPage() {
       setPhotoFile(null);
       setMsg({ kind: 'ok', text: 'Profile saved.' });
     } catch (e) {
-      setMsg({ kind: 'err', text: (e as Error).message });
+      setMsg({ kind: 'err', text: friendlyError(e) });
     } finally {
       setSaving(false);
     }
@@ -104,7 +105,7 @@ export function SettingsPage() {
       await reloadPeople();
       setMsg({ kind: 'ok', text: 'Person added.' });
     } catch (e) {
-      setMsg({ kind: 'err', text: (e as Error).message });
+      setMsg({ kind: 'err', text: friendlyError(e) });
     } finally {
       setSaving(false);
     }
