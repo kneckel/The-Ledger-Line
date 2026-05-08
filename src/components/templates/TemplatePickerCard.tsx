@@ -15,9 +15,9 @@ interface Props {
   onSelect: () => void;
 }
 
-const SCALE = 0.30;
-const CARD_WIDTH = 260;
-const CARD_HEIGHT = 380;
+const SCALE = 0.23;
+const CARD_WIDTH = 200;
+const CARD_HEIGHT = 290;
 
 export function TemplatePickerCard({ template, selected, onSelect }: Props) {
   const fakeNewsletter = {
