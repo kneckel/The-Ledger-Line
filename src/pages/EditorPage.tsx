@@ -331,14 +331,14 @@ export function EditorPage() {
 
         <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_340px] gap-8 items-start">
           {/* Left — templates grouped by cadence */}
-          <div className="flex flex-col gap-8 min-w-0">
+          <div className="flex flex-col gap-12 min-w-0">
             {groups.map(({ cadence, label, description, items }) => (
               <section key={cadence}>
-                <header className="mb-3">
+                <header className="mb-4">
                   <h4 className="font-serif text-lg text-slate-900">{label}</h4>
                   <p className="text-xs text-slate-500">{description}</p>
                 </header>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
                   {items.map((t) => (
                     <TemplatePickerCard
                       key={t.id}
@@ -353,8 +353,16 @@ export function EditorPage() {
           </div>
 
           {/* Right — sticky form rail (paper-coloured to match the brand) */}
-          <aside className="xl:sticky xl:top-6 xl:self-start">
-            <div className="rounded-lg overflow-hidden shadow-newsletter bg-white border border-slate-200">
+          <aside className="xl:self-start">
+            {/* Phantom spacer matching the section header (h4 + description +
+                mb-3) so the rail's navy band starts aligned with the row of
+                template cards in the first group, not with the heading above
+                them. The spacer stays in flow; the inner div sticks. */}
+            <div aria-hidden className="hidden xl:block mb-4">
+              <h4 className="font-serif text-lg invisible">.</h4>
+              <p className="text-xs invisible">.</p>
+            </div>
+            <div className="xl:sticky xl:top-6 rounded-lg overflow-hidden shadow-newsletter bg-white border border-slate-200">
               {/* Brand-coloured header band so the rail feels like part of the same palette as the rendered newsletter */}
               <div
                 className="px-5 py-4 text-white"
