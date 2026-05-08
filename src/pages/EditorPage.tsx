@@ -338,7 +338,7 @@ export function EditorPage() {
                   <h4 className="font-serif text-lg text-slate-900">{label}</h4>
                   <p className="text-xs text-slate-500">{description}</p>
                 </header>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-x-8 gap-y-8 justify-items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-10 gap-y-10 justify-items-start">
                   {items.map((t) => (
                     <TemplatePickerCard
                       key={t.id}
