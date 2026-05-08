@@ -36,6 +36,14 @@ const THEME_BY_SLUG: Record<string, Partial<NewsletterTheme>> = {
   'risk-and-red-flags':         { hero: '#1B3A4B', accent1: '#C8341A' },                    // deeper red
   'year-end-awards':            { hero: '#16344A', accent1: '#E9B341', accent2: '#F4C460' },// gold dominant
   'exec-board-briefing':        { hero: '#16344A', accent1: '#5F7E8C', accent3: '#E9B341' },// minimalist
+
+  // Phase 7+ additions
+  'magazine-issue':             { hero: '#1B3A4B', accent1: '#C8541F', accent2: '#D9A22A' },// warm magazine
+  'poster-flyer':               { hero: '#0E1116', accent1: '#FF5722', accent2: '#FFB74D' },// bold poster
+  'interactive-workshop':       { hero: '#1A5C56', accent1: '#E54E2C', accent2: '#F4C460' },// learner teal
+  'event-recap':                { hero: '#16344A', accent1: '#E9B341', accent2: '#F4C460', accent3: '#1F786E' }, // celebratory gold
+  'crisis-memo':                { hero: '#5C1A14', accent1: '#D7372A', accent2: '#E9B341' },// urgent red
+  'compliance-brief':           { hero: '#16344A', accent1: '#E54E2C', accent3: '#5F7E8C' },// clean / minimal
 };
 
 export function resolveTheme(template: Template): NewsletterTheme {

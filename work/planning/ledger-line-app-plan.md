@@ -114,7 +114,7 @@ Each slot is a typed JSON shape Reneé fills via a per-slot editor. The renderer
 
 Each slot also carries `hint` (originally a prompt hint for AI; now used as the UI **placeholder / helper text** in the form) and length bounds (used as **soft warnings** in the editor — "this section is usually 300–450 words").
 
-## 7. Templates (12 total)
+## 7. Templates (18 total)
 
 | # | Template | Cadence | Slot composition (high level) |
 |---|---|---|---|
@@ -130,6 +130,12 @@ Each slot also carries `hint` (originally a prompt hint for AI; now used as the 
 | 10 | Risk & Red Flags Edition | special | multi-scenario quiz, risk radar, escalation paths |
 | 11 | Year-End Awards | annual | Gold Standard winners, champion roster, leaderboard |
 | 12 | CEO/Board Briefing | special | exec summary, KPIs, top risks, one-page |
+| 13 | Magazine Issue | quarterly | editor's note, cover story, interview, second feature, two photo spotlights, third feature, dates, closing |
+| 14 | Poster / Flyer | special | hero + dominant award card + short message + closing CTA |
+| 15 | Interactive Workshop | onboarding | intro, paired policy refreshers + red-flag scenarios, recognition, closing |
+| 16 | Event Recap | special | intro, narrative recap, three photo highlights, takeaways, thank-yous |
+| 17 | Crisis Memo | special | urgent hero, what happened, what to do (policy refresher), deadlines, contacts, emergency CTA |
+| 18 | Compliance Brief | monthly | one-paragraph note, quick hits, key dates, closing |
 
 ## 8. Composition algorithm
 
