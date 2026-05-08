@@ -247,7 +247,7 @@ export function EditorPage() {
   // Render
   // ---------------------------------------------------------------------------
   return (
-    <div className={isNew ? 'max-w-6xl' : 'max-w-4xl'}>
+    <div className={isNew ? 'max-w-7xl' : 'max-w-4xl'}>
       <div className="flex items-center justify-between mb-6">
         <h2 className="font-serif text-3xl tracking-tight text-slate-900">
           {isNew ? 'New newsletter' : title || 'Untitled'}
@@ -329,7 +329,7 @@ export function EditorPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_340px] gap-12 items-start">
+        <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_320px] gap-10 items-start">
           {/* Left — templates grouped by cadence */}
           <div className="flex flex-col gap-12 min-w-0">
             {groups.map(({ cadence, label, description, items }) => (
@@ -338,7 +338,7 @@ export function EditorPage() {
                   <h4 className="font-serif text-lg text-slate-900">{label}</h4>
                   <p className="text-xs text-slate-500">{description}</p>
                 </header>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10 justify-items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-10 justify-items-start">
                   {items.map((t) => (
                     <TemplatePickerCard
                       key={t.id}
