@@ -320,112 +320,133 @@ export function EditorPage() {
     const selected = selectedTemplate;
 
     return (
-      <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_320px] gap-6 items-start">
-        {/* Left — templates grouped by cadence */}
-        <div className="flex flex-col gap-8 min-w-0">
-          <div>
-            <h3 className="text-sm font-medium text-slate-700">Pick a template</h3>
-            <p className="text-xs text-slate-500 mt-1">
-              Each card is a live preview at small scale. Click to choose; details on the right.
-            </p>
-          </div>
-
-          {groups.map(({ cadence, label, description, items }) => (
-            <section key={cadence}>
-              <header className="mb-3">
-                <h4 className="font-serif text-lg text-slate-900">{label}</h4>
-                <p className="text-xs text-slate-500">{description}</p>
-              </header>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                {items.map((t) => (
-                  <TemplatePickerCard
-                    key={t.id}
-                    template={t}
-                    selected={t.id === templateId}
-                    onSelect={() => setTemplateId(t.id)}
-                  />
-                ))}
-              </div>
-            </section>
-          ))}
+      <div className="flex flex-col gap-6">
+        {/* Full-width intro so the rail starts at the same y as the first group */}
+        <div>
+          <h3 className="text-sm font-medium text-slate-700">Pick a template</h3>
+          <p className="text-xs text-slate-500 mt-1">
+            Each card is a live preview at small scale. Click to choose; details on the right.
+          </p>
         </div>
 
-        {/* Right — sticky form rail */}
-        <aside className="xl:sticky xl:top-6 xl:self-start">
-          <div className="bg-white border border-slate-200 rounded-lg p-5 flex flex-col gap-4 shadow-sm">
-            <div>
-              <p className="text-[11px] tracking-wider uppercase text-slate-500 font-semibold">
-                Issue details
-              </p>
-              {selected ? (
-                <p className="text-sm text-slate-900 font-medium mt-1">
-                  Using <strong>{selected.name}</strong>{' '}
-                  <span className="text-xs text-brand-teal font-semibold uppercase tracking-wider">
-                    {selected.cadence}
-                  </span>
-                </p>
-              ) : (
-                <p className="text-xs text-slate-500 mt-1 italic">Pick a template to continue.</p>
-              )}
-            </div>
-
-            <label className="flex flex-col gap-1 text-sm">
-              <span className="text-slate-700 font-medium">Title</span>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="The Ledger Line — Q2 2026"
-                className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
-              />
-            </label>
-
-            <label className="flex flex-col gap-1 text-sm">
-              <span className="text-slate-700 font-medium">Period</span>
-              <input
-                type="text"
-                value={periodLabel}
-                onChange={(e) => setPeriodLabel(e.target.value)}
-                placeholder="Q2 2026 or May 2026"
-                className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
-              />
-            </label>
-
-            {templateId && pastIssues.length > 0 && (
-              <label className="flex flex-col gap-1 text-sm">
-                <span className="text-slate-700 font-medium">Pre-fill from</span>
-                <select
-                  value={prefillSourceId}
-                  onChange={(e) => setPrefillSourceId(e.target.value)}
-                  className="border border-slate-300 rounded-md px-3 py-2 text-sm"
-                >
-                  <option value="">Start blank</option>
-                  <option value="auto">Most recent published issue</option>
-                  <optgroup label="Specific past issue">
-                    {pastIssues.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.title || 'Untitled'} · {p.status}
-                      </option>
-                    ))}
-                  </optgroup>
-                </select>
-                <span className="text-xs text-slate-500">
-                  The chosen issue's sections are copied as a starting point. You can still edit
-                  every section.
-                </span>
-              </label>
-            )}
-
-            <button
-              type="button"
-              onClick={() => void handleCreate()}
-              disabled={!templateId}
-              className="bg-slate-900 text-white text-sm rounded-md px-4 py-2 hover:bg-slate-800 disabled:opacity-50"
-            >
-              Create newsletter
-            </button>
+        <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_340px] gap-8 items-start">
+          {/* Left — templates grouped by cadence */}
+          <div className="flex flex-col gap-8 min-w-0">
+            {groups.map(({ cadence, label, description, items }) => (
+              <section key={cadence}>
+                <header className="mb-3">
+                  <h4 className="font-serif text-lg text-slate-900">{label}</h4>
+                  <p className="text-xs text-slate-500">{description}</p>
+                </header>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {items.map((t) => (
+                    <TemplatePickerCard
+                      key={t.id}
+                      template={t}
+                      selected={t.id === templateId}
+                      onSelect={() => setTemplateId(t.id)}
+                    />
+                  ))}
+                </div>
+              </section>
+            ))}
           </div>
-        </aside>
+
+          {/* Right — sticky form rail (paper-coloured to match the brand) */}
+          <aside className="xl:sticky xl:top-6 xl:self-start">
+            <div className="rounded-lg overflow-hidden shadow-newsletter bg-white border border-slate-200">
+              {/* Brand-coloured header band so the rail feels like part of the same palette as the rendered newsletter */}
+              <div
+                className="px-5 py-4 text-white"
+                style={{ background: '#1B3A4B' }}
+              >
+                <p
+                  className="text-[10px] tracking-[0.22em] uppercase font-semibold"
+                  style={{ color: '#E9B341' }}
+                >
+                  Issue details
+                </p>
+                {selected ? (
+                  <p className="font-serif text-xl mt-1 leading-tight text-white">
+                    {title || 'Untitled'}
+                  </p>
+                ) : (
+                  <p className="font-serif text-xl mt-1 leading-tight text-white/70 italic">
+                    Pick a template
+                  </p>
+                )}
+                {selected && (
+                  <p className="text-xs mt-1 text-white/70">
+                    {selected.name}
+                    <span
+                      className="ml-2 text-[10px] tracking-[0.16em] uppercase font-semibold"
+                      style={{ color: '#E9B341' }}
+                    >
+                      {selected.cadence}
+                    </span>
+                  </p>
+                )}
+              </div>
+
+              <div className="p-5 flex flex-col gap-4 bg-brand-cream-3">
+                <label className="flex flex-col gap-1 text-sm">
+                  <span className="text-slate-800 font-medium">Title</span>
+                  <input
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="The Ledger Line — Q2 2026"
+                    className="border border-slate-300 rounded-md px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-slate-900"
+                  />
+                </label>
+
+                <label className="flex flex-col gap-1 text-sm">
+                  <span className="text-slate-800 font-medium">Period</span>
+                  <input
+                    type="text"
+                    value={periodLabel}
+                    onChange={(e) => setPeriodLabel(e.target.value)}
+                    placeholder="Q2 2026 or May 2026"
+                    className="border border-slate-300 rounded-md px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-slate-900"
+                  />
+                </label>
+
+                {templateId && pastIssues.length > 0 && (
+                  <label className="flex flex-col gap-1 text-sm">
+                    <span className="text-slate-800 font-medium">Pre-fill from</span>
+                    <select
+                      value={prefillSourceId}
+                      onChange={(e) => setPrefillSourceId(e.target.value)}
+                      className="border border-slate-300 rounded-md px-3 py-2 text-sm bg-white"
+                    >
+                      <option value="">Start blank</option>
+                      <option value="auto">Most recent published issue</option>
+                      <optgroup label="Specific past issue">
+                        {pastIssues.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.title || 'Untitled'} · {p.status}
+                          </option>
+                        ))}
+                      </optgroup>
+                    </select>
+                    <span className="text-xs text-slate-600">
+                      Sections from the chosen issue are copied as a starting point.
+                    </span>
+                  </label>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => void handleCreate()}
+                  disabled={!templateId}
+                  className="mt-2 bg-slate-900 text-white text-sm rounded-md px-4 py-2.5 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {templateId ? 'Create newsletter' : 'Pick a template first'}
+                </button>
+              </div>
+            </div>
+          </aside>
+        </div>
       </div>
     );
   }
