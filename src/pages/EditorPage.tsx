@@ -290,16 +290,6 @@ export function EditorPage() {
               Unpublish
             </button>
           )}
-          {isNew && (
-            <button
-              type="button"
-              onClick={() => void handleCreate()}
-              disabled={!templateId}
-              className="bg-slate-900 text-white text-sm rounded-md px-4 py-2 hover:bg-slate-800 disabled:opacity-50"
-            >
-              Create
-            </button>
-          )}
         </div>
       </div>
 
@@ -323,75 +313,119 @@ export function EditorPage() {
   );
 
   // ---------------------------------------------------------------------------
-  // New-issue flow: template picker + title/period + pre-fill picker
+  // New-issue flow: grouped template picker + sticky title/period rail
   // ---------------------------------------------------------------------------
   function renderNewFlow() {
+    const groups = groupTemplatesByCadence(templates);
+    const selected = selectedTemplate;
+
     return (
-      <div className="flex flex-col gap-6">
-        <div>
-          <h3 className="text-sm font-medium text-slate-700 mb-1">Pick a template</h3>
-          <p className="text-xs text-slate-500 mb-4">
-            Each card shows the layout. Click to choose.
-          </p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {templates.map((t) => (
-              <TemplatePickerCard
-                key={t.id}
-                template={t}
-                selected={t.id === templateId}
-                onSelect={() => setTemplateId(t.id)}
-              />
-            ))}
+      <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_320px] gap-6 items-start">
+        {/* Left — templates grouped by cadence */}
+        <div className="flex flex-col gap-8 min-w-0">
+          <div>
+            <h3 className="text-sm font-medium text-slate-700">Pick a template</h3>
+            <p className="text-xs text-slate-500 mt-1">
+              Each card is a live preview at small scale. Click to choose; details on the right.
+            </p>
           </div>
+
+          {groups.map(({ cadence, label, description, items }) => (
+            <section key={cadence}>
+              <header className="mb-3">
+                <h4 className="font-serif text-lg text-slate-900">{label}</h4>
+                <p className="text-xs text-slate-500">{description}</p>
+              </header>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {items.map((t) => (
+                  <TemplatePickerCard
+                    key={t.id}
+                    template={t}
+                    selected={t.id === templateId}
+                    onSelect={() => setTemplateId(t.id)}
+                  />
+                ))}
+              </div>
+            </section>
+          ))}
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-lg p-6 flex flex-col gap-4 max-w-2xl">
-          <label className="flex flex-col gap-1 text-sm">
-            <span className="text-slate-700">Title</span>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. The Ledger Line — Q2 2026"
-              className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
-            />
-          </label>
+        {/* Right — sticky form rail */}
+        <aside className="xl:sticky xl:top-6 xl:self-start">
+          <div className="bg-white border border-slate-200 rounded-lg p-5 flex flex-col gap-4 shadow-sm">
+            <div>
+              <p className="text-[11px] tracking-wider uppercase text-slate-500 font-semibold">
+                Issue details
+              </p>
+              {selected ? (
+                <p className="text-sm text-slate-900 font-medium mt-1">
+                  Using <strong>{selected.name}</strong>{' '}
+                  <span className="text-xs text-brand-teal font-semibold uppercase tracking-wider">
+                    {selected.cadence}
+                  </span>
+                </p>
+              ) : (
+                <p className="text-xs text-slate-500 mt-1 italic">Pick a template to continue.</p>
+              )}
+            </div>
 
-          <label className="flex flex-col gap-1 text-sm">
-            <span className="text-slate-700">Period label</span>
-            <input
-              type="text"
-              value={periodLabel}
-              onChange={(e) => setPeriodLabel(e.target.value)}
-              placeholder="e.g. Q2 2026 or May 2026"
-              className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
-            />
-          </label>
-
-          {templateId && pastIssues.length > 0 && (
             <label className="flex flex-col gap-1 text-sm">
-              <span className="text-slate-700">Pre-fill content from</span>
-              <select
-                value={prefillSourceId}
-                onChange={(e) => setPrefillSourceId(e.target.value)}
-                className="border border-slate-300 rounded-md px-3 py-2 text-sm"
-              >
-                <option value="">Start blank</option>
-                <option value="auto">Most recent published issue (auto)</option>
-                <optgroup label="Pick a specific past issue">
-                  {pastIssues.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.title || 'Untitled'} · {p.status} · {new Date(p.updated_at).toLocaleDateString()}
-                    </option>
-                  ))}
-                </optgroup>
-              </select>
-              <span className="text-xs text-slate-500">
-                The selected issue's content is copied as your starting point. You can still edit every section.
-              </span>
+              <span className="text-slate-700 font-medium">Title</span>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="The Ledger Line — Q2 2026"
+                className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+              />
             </label>
-          )}
-        </div>
+
+            <label className="flex flex-col gap-1 text-sm">
+              <span className="text-slate-700 font-medium">Period</span>
+              <input
+                type="text"
+                value={periodLabel}
+                onChange={(e) => setPeriodLabel(e.target.value)}
+                placeholder="Q2 2026 or May 2026"
+                className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+              />
+            </label>
+
+            {templateId && pastIssues.length > 0 && (
+              <label className="flex flex-col gap-1 text-sm">
+                <span className="text-slate-700 font-medium">Pre-fill from</span>
+                <select
+                  value={prefillSourceId}
+                  onChange={(e) => setPrefillSourceId(e.target.value)}
+                  className="border border-slate-300 rounded-md px-3 py-2 text-sm"
+                >
+                  <option value="">Start blank</option>
+                  <option value="auto">Most recent published issue</option>
+                  <optgroup label="Specific past issue">
+                    {pastIssues.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.title || 'Untitled'} · {p.status}
+                      </option>
+                    ))}
+                  </optgroup>
+                </select>
+                <span className="text-xs text-slate-500">
+                  The chosen issue's sections are copied as a starting point. You can still edit
+                  every section.
+                </span>
+              </label>
+            )}
+
+            <button
+              type="button"
+              onClick={() => void handleCreate()}
+              disabled={!templateId}
+              className="bg-slate-900 text-white text-sm rounded-md px-4 py-2 hover:bg-slate-800 disabled:opacity-50"
+            >
+              Create newsletter
+            </button>
+          </div>
+        </aside>
       </div>
     );
   }
@@ -490,6 +524,48 @@ export function EditorPage() {
       </div>
     );
   }
+}
+
+// ---------------------------------------------------------------------------
+// Group templates by cadence with friendly headings.
+// ---------------------------------------------------------------------------
+const CADENCE_GROUPS: {
+  cadence: 'quarterly' | 'monthly' | 'annual' | 'special' | 'onboarding';
+  label: string;
+  description: string;
+}[] = [
+  {
+    cadence: 'quarterly',
+    label: 'Quarterly',
+    description: 'Detailed long-form issues for every three-month cycle.',
+  },
+  {
+    cadence: 'monthly',
+    label: 'Monthly',
+    description: 'Concise regular pulses to keep the team in step.',
+  },
+  {
+    cadence: 'annual',
+    label: 'Annual',
+    description: 'Year-end recaps, awards, and outlook editions.',
+  },
+  {
+    cadence: 'special',
+    label: 'Special editions',
+    description: 'Triggered by events, alerts, audits, posters, and one-offs.',
+  },
+  {
+    cadence: 'onboarding',
+    label: 'Onboarding & training',
+    description: 'For new joiners and self-led learning packs.',
+  },
+];
+
+function groupTemplatesByCadence(templates: Template[]) {
+  return CADENCE_GROUPS.map((g) => ({
+    ...g,
+    items: templates.filter((t) => t.cadence === g.cadence),
+  })).filter((g) => g.items.length > 0);
 }
 
 function SaveIndicator({ state }: { state: 'idle' | 'saving' | 'saved' | 'error' }) {
